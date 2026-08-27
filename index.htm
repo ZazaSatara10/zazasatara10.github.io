@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-adsense-account" content="ca-pub-6320415948412008">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1070ff">
+  <meta name="description" content="Save a location and navigate back using Google Maps. Works across Android and Windows." />
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <title>Pinpal — Save &amp; Navigate Back</title>
+  <style>
+    :root {
+      --bg: #f5f8ff;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --primary: #1070ff;
+      --primary-strong: #0a57d9;
+      --accent: #cfe6ff;
+      --border: #dfe7f3;
+      --text: #111827;
+      --muted: #58667a;
+      --danger: #d93025;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      --radius: 12px;
+      --pad: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #eef5ff 0%, #ffffff 140px);
+      color: var(--text);
+      padding: var(--pad);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      flex: 1;
+      width: 100%;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: linear-gradient(135deg, #cfe9ff, #bfe2f7);
+      border: 1px solid rgba(18, 82, 175, 0.08);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2vw, 2rem);
+      line-height: 1.1;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .hero-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 14px 0 18px;
+      position: relative;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      min-height: 48px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(17, 24, 39, 0.08);
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-strong);
+      border-color: var(--primary-strong);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: #fff;
+      border-color: rgba(217, 48, 37, 0.25);
+      color: var(--danger);
+    }
+
+    .btn-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .share-btn {
+      min-width: 110px;
+    }
+
+    .share-menu {
+      display: none;
+      position: absolute;
+      top: 56px;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      min-width: 210px;
+      padding: 6px;
+      z-index: 100;
+    }
+
+    .share-option {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .share-option:hover {
+      background: var(--surface-soft);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .save-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      flex: 1 1 200px;
+      min-width: 0;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid rgba(16, 112, 255, 0.15);
+      border-color: var(--primary);
+    }
+
+    .status {
+      margin-top: 12px;
+      min-height: 20px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .saved-list {
+      min-height: 36px;
+      padding: 8px 0;
+    }
+
+    .loc {
+      border: 1px solid #edf1f7;
+      background: var(--surface-soft);
+      padding: 14px 12px;
+      border-radius: var(--radius);
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .loc-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .loc-name {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .loc-meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .loc-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .permission-banner {
+      display: none;
+      border: 1px solid #f3c3d6;
+      border-radius: 12px;
+      margin: 12px 0 18px;
+      background: #fff6f7;
+      padding: 14px 16px;
+    }
+
+    .permission-message {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .permission-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .permission-instructions {
+      display: none;
+      margin-top: 12px;
+      color: #2f3746;
+    }
+
+    .permission-steps ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .permission-steps li + li {
+      margin-top: 8px;
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary-strong);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 12px;
+        background: linear-gradient(180deg, #edf5ff 0%, #ffffff 120px);
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      .save-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .field, .save-bar .btn, .save-bar select {
+        width: 100%;
+      }
+
+      .loc {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .loc-actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .loc-actions .btn {
+        flex: 1 1 120px;
+      }
+
+      .footer-links {
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .panel, .topbar {
+        padding: 14px;
+      }
+
+      .hero-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-row .btn,
+      .share-btn {
+        width: 100%;
+      }
+
+      .share-menu {
+        left: 0;
+        right: auto;
+        width: min(92vw, 260px);
+      }
+
+      .permission-actions {
+        flex-direction: column;
+      }
+
+      .permission-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J7R3P2XHEF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('js', new Date());
+    gtag('config', 'G-J7R3P2XHEF');
+  </script>
+</head>
+<body>
+  <main class="app-shell">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Pinpal</h1>
+        <div class="muted">Your map and pin utility.</div>
+      </div>
+
+      <div class="hero-row">
+        <button id="install-btn" class="btn btn-primary" aria-hidden="true">
+          <img class="btn-icon" src="icons/icon.svg" alt="icon"> Install to home screen
+        </button>
+
+        <button id="share-btn" class="btn btn-secondary share-btn" aria-label="Share Finda" title="Share Finda">
+          <img class="btn-icon" src="icons/icon.svg" alt="icon"> Share
+        </button>
+
+        <div id="share-menu" class="share-menu" aria-label="Share options">
+          <button class="share-option" data-action="native">Share (native)</button>
+          <button class="share-option" data-action="whatsapp">WhatsApp</button>
+          <button class="share-option" data-action="twitter">Twitter</button>
+          <button class="share-option" data-action="facebook">Facebook</button>
+          <button class="share-option" data-action="copy">Copy link</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="permBanner" class="permission-banner">
+      <div id="permMsg" class="permission-message">Location permission is required.</div>
+      <div class="permission-actions">
+        <button id="openAndroidSettings" class="btn btn-secondary">Open Android location settings</button>
+        <button id="openWindowsSettings" class="btn btn-secondary">Open Windows location settings</button>
+        <button id="retryPerm" class="btn btn-primary">Retry</button>
+      </div>
+      <div id="permInstructions" class="permission-instructions">
+        <div id="permSteps" class="permission-steps"></div>
+      </div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <h1>Pinpal</h1>
+      </div>
+      <div class="muted">Save a location and navigate back with Google Maps</div>
+    </header>
+
+    <section class="panel">
+      <div class="save-bar">
+        <div class="field">
+          <input id="name" placeholder="Location name (optional)" aria-label="Location name" />
+        </div>
+        <button id="saveBtn" class="btn btn-primary">Save Current Location</button>
+        <div class="field" style="max-width:180px;">
+          <select id="mode" aria-label="Travel mode">
+            <option value="walking">Walking</option>
+            <option value="driving">Driving</option>
+            <option value="bicycling">Bicycling</option>
+            <option value="transit">Transit</option>
+          </select>
+        </div>
+      </div>
+      <div id="status" class="status muted">Status: idle</div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <h2>Saved Locations</h2>
+      </div>
+      <div id="list" class="saved-list">(none)</div>
+      <button id="clearAll" class="btn btn-danger">Clear All</button>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="Privacy.html">Privacy Policy</a>
+      </div>
+      <div class="muted">© 2026 Pinpal</div>
+    </footer>
+  </main>
+
+  <script>
+    // PWA install button handling
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('install-btn');
+    const shareBtn = document.getElementById('share-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-flex';
+      installBtn.setAttribute('aria-hidden', 'false');
+    });
+
+    installBtn.addEventListener('click', async () => {
+      installBtn.disabled = true;
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        try { await deferredPrompt.userChoice; } catch (err) {}
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      } else {
+        alert('To install: open your browser menu and tap "Add to Home screen".');
+      }
+      installBtn.disabled = false;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+    });
+
+    const shareMenu = document.getElementById('share-menu');
+    const shareOptions = Array.from(document.querySelectorAll('#share-menu .share-option'));
+
+    function hideShareMenu() {
+      shareMenu.style.display = 'none';
+      document.removeEventListener('click', docClick);
+    }
+
+    function docClick(e) {
+      if (!e.target.closest('#share-menu') && e.target !== shareBtn) hideShareMenu();
+    }
+
+    shareBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      shareMenu.style.display = 'block';
+      document.addEventListener('click', docClick);
+    });
+
+    shareOptions.forEach(btn => btn.addEventListener('click', async (ev) => {
+      const action = btn.getAttribute('data-action');
+      const metaShare = document.querySelector('meta[name="share-url"]');
+
+      function ensureHttps(u) {
+        if (!u) return u;
+        if (/^http:/i.test(u)) return u.replace(/^http:/i, 'https:');
+        if (/^https?:\/\//i.test(u)) return u;
+        const clean = u.replace(/^\/+/, '');
+        return 'https://' + clean;
+      }
+
+      const rawUrl = (metaShare && metaShare.content) ? metaShare.content : location.href;
+      const url = ensureHttps(String(rawUrl));
+      const text = (document.title ? document.title + ' - ' : '') + 'Check out Pinpal';
+
+      if (action === 'native') {
+        if (navigator.share) {
+          try { await navigator.share({ title: document.title, text, url }); hideShareMenu(); return; } catch (err) { /* fallthrough */ }
+        } else {
+          alert('Native share not supported on this device.');
+        }
+      }
+
+      if (action === 'whatsapp') {
+        const payload = encodeURIComponent(text + ' ' + url);
+        const wa = 'https://wa.me/?text=' + payload;
+        window.open(wa, '_blank');
+        hideShareMenu();
+        return;
+      }
+
+      if (action === 'twitter') {
+        const payload = encodeURIComponent(text + ' ' + url);
+        const tw = 'https://twitter.com/intent/tweet?text=' + payload;
+        window.open(tw, '_blank');
+        hideShareMenu();
+        return;
+      }
+
+      if (action === 'facebook') {
+        const fb = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+        window.open(fb, '_blank');
+        hideShareMenu();
+        return;
+      }
+
+      if (action === 'copy') {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(url);
+            alert('Link copied to clipboard');
+            hideShareMenu();
+            return;
+          }
+        } catch (err) {}
+        prompt('Copy this link', url);
+        hideShareMenu();
+        return;
+      }
+    }));
+
+    const key = 'finda_locations_v1';
+    const status = (s)=>document.getElementById('status').textContent = 'Status: '+s;
+
+    function load(){
+      try{ return JSON.parse(localStorage.getItem(key)||'[]') }catch(e){return[]}
+    }
+    function saveAll(arr){ localStorage.setItem(key, JSON.stringify(arr)); renderList(); }
+
+    function renderList(){
+      const list = document.getElementById('list')
+      const items = load()
+      if(!items.length){ list.textContent='(none)'; return }
+      list.innerHTML=''
+      items.forEach((it,idx)=>{
+        const el = document.createElement('div'); el.className='loc'
+        const left = document.createElement('div'); left.className='loc-main'
+        left.innerHTML = `<span class="loc-name">${escapeHtml(it.name||'Saved location')}</span><div class="loc-meta">${it.lat.toFixed(6)}, ${it.lng.toFixed(6)} • ${new Date(it.ts).toLocaleStri[...]`
+        const right = document.createElement('div'); right.className='loc-actions'
+        const showBtn = document.createElement('button'); showBtn.className='btn btn-secondary'; showBtn.textContent='Show on Map'
+        showBtn.onclick = ()=>{
+          const url = `https://www.google.com/maps/search/?api=1&query=${it.lat},${it.lng}`
+          window.open(url, '_blank')
+        }
+        const navBtn = document.createElement('button'); navBtn.className='btn btn-secondary'; navBtn.textContent='Navigate'
+        navBtn.onclick = async ()=>{
+          status('preparing navigation...')
+          try{
+            const mode = document.getElementById('mode').value
+            const dest = `${it.lat},${it.lng}`
+            const intentUrl = `intent://navigate?q=${dest}#Intent;package=com.google.android.apps.maps;scheme=google.navigation;end`
+            try{ window.location.href = intentUrl }catch(e){}
+
+            setTimeout(async ()=>{
+              try{
+                const pos = await getCurrentPosition()
+                const mapsWeb = `https://www.google.com/maps/dir/?api=1&origin=${pos.coords.latitude},${pos.coords.longitude}&destination=${dest}&travelmode=${mode}`
+                window.open(mapsWeb, '_blank')
+                status('opened Google Maps')
+              }catch(e){
+                const mapsWeb = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=${mode}`
+                window.open(mapsWeb, '_blank')
+                status('opened Google Maps')
+              }
+            }, 1200)
+          }catch(e){ status('navigation failed: '+(e.message||e)) }
+        }
+        const sharePlaceBtn = document.createElement('button'); sharePlaceBtn.className='btn btn-secondary'; sharePlaceBtn.textContent='Share'
+        sharePlaceBtn.onclick = ()=>{
+          try{
+            const mode = document.getElementById('mode').value || 'driving'
+            const dest = `${it.lat},${it.lng}`
+            const mapsWeb = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=${mode}`
+            const label = it.name ? `${it.name} — ` : ''
+            const text = `${label}Navigate here: ${mapsWeb}`
+            const payload = encodeURIComponent(text)
+            const wa = 'https://wa.me/?text=' + payload
+            window.open(wa, '_blank')
+          }catch(e){
+            alert('Unable to open share dialog: '+(e&&e.message?e.message:e))
+          }
+        }
+
+        const delBtn = document.createElement('button'); delBtn.className='btn btn-danger'; delBtn.textContent='Delete'
+        delBtn.onclick = ()=>{ items.splice(idx,1); saveAll(items) }
+        right.appendChild(showBtn); right.appendChild(navBtn); right.appendChild(sharePlaceBtn); right.appendChild(delBtn)
+        el.appendChild(left); el.appendChild(right); list.appendChild(el)
+      })
+    }
+
+    function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+    async function checkPermissionState(){
+      if(!navigator.permissions) return 'unknown'
+      try{
+        const p = await navigator.permissions.query({name:'geolocation'})
+        try{ p.onchange = () => { if(p.state === 'granted') hideBanner(); } }catch(e){}
+        return p.state
+      }catch(e){return 'unknown'}
+    }
+
+    function showBanner(msg){ const b = document.getElementById('permBanner'); document.getElementById('permMsg').textContent = msg; b.style.display='block' }
+    function hideBanner(){ document.getElementById('permBanner').style.display = 'none' }
+
+    function handlePermissionDenied(err){
+      if(err && err.code === 1){
+        showBanner('Location permission denied. Open settings to enable location access and then retry.')
+        const platform = navigator.userAgent && navigator.userAgent.includes('Android') ? 'android' : (navigator.userAgent.includes('Windows') ? 'windows' : '')
+        showInstructions(platform)
+      }else{
+        status('failed: '+(err.message||err))
+      }
+    }
+
+    function showInstructions(platform){
+      const inst = document.getElementById('permInstructions')
+      const stepsEl = document.getElementById('permSteps')
+      let html = ''
+      if(!window.isSecureContext){
+        html += '<p><strong>Note:</strong> This page is not served over HTTPS. Geolocation requires a secure context (HTTPS) or localhost. Serve the page over HTTPS or open it from <em>http://loc[...]'
+      }
+      if(platform === 'android'){
+        html += '<ol>'+
+          '<li>Open Android Settings → Location and ensure Location services are ON.</li>'+
+          '<li>Open Settings → Apps → (your browser) → Permissions → Location → Allow.</li>'+
+          '<li>In Chrome: menu → Settings → Site settings → Location → Allow for this site.</li>'+
+          "<li>Return to the browser and press <strong>Retry</strong>.</li>"+
+        '</ol>'
+      }else if(platform === 'windows'){
+        html += '<ol>'+
+          '<li>Open Windows Settings → Privacy & security → Location and make sure Location is ON.</li>'+
+          '<li>Under App permissions, allow location access for your browser.</li>'+
+          '<li>Return to this page and press <strong>Retry</strong>.</li>'+
+        '</ol>'
+      }else{
+        html += '<p>Enable device Location services and allow this site to access Location in your browser settings, then press <strong>Retry</strong>.</p>'
+      }
+      stepsEl.innerHTML = html
+      inst.style.display = 'block'
+    }
+
+    function getCurrentPosition(options={enableHighAccuracy:true,timeout:10000}){
+      return new Promise((resolve,reject)=>{
+        if(!navigator.geolocation) return reject(new Error('Geolocation not supported'))
+        if(!window.isSecureContext){
+          const msg = 'Insecure context: geolocation requires HTTPS or localhost.'
+          showBanner(msg)
+          showInstructions('')
+          return reject(new Error(msg))
+        }
+
+        navigator.geolocation.getCurrentPosition(resolve, async (err)=>{
+          if(err){
+            if(err.code === 1){
+              handlePermissionDenied(err)
+              return reject(new Error('Permission denied'))
+            }
+            if(err.code === 2){
+              showBanner('Position unavailable. Make sure device GPS/location is enabled and try again.')
+              showInstructions('')
+              return reject(new Error('Position unavailable'))
+            }
+            if(err.code === 3){
+              status('location request timed out; retrying with longer timeout...')
+              try{
+                const pos = await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:false,timeout:20000}))
+                return resolve(pos)
+              }catch(retryErr){
+                showBanner('Location request timed out. Ensure device can get a GPS fix and try again.')
+                showInstructions('')
+                return reject(new Error('Timeout'))
+              }
+            }
+            showBanner('Unable to get location: '+(err.message||err.code))
+            showInstructions('')
+            return reject(err)
+          }
+        }, options)
+      })
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', async ()=>{
+      const name = document.getElementById('name').value.trim()
+      status('requesting current position...')
+      try{
+        const pos = await getCurrentPosition()
+        const loc = { name: name||'', lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now() }
+        const items = load(); items.push(loc); saveAll(items)
+        status('location saved')
+      }catch(e){ status('failed: '+(e.message||e)) }
+    })
+
+    document.getElementById('clearAll').addEventListener('click', ()=>{
+      if(!confirm('Clear all saved locations?')) return
+      localStorage.removeItem(key); renderList(); status('cleared')
+    })
+
+    document.getElementById('openAndroidSettings').addEventListener('click', ()=>{
+      try{ window.location.href = 'intent://#Intent;action=android.settings.LOCATION_SOURCE_SETTINGS;end' }catch(e){}
+      showInstructions('android')
+    })
+    document.getElementById('openWindowsSettings').addEventListener('click', ()=>{ 
+      try{ window.location.href = 'ms-settings:privacy-location' }catch(e){}
+      showInstructions('windows')
+    })
+    document.getElementById('retryPerm').addEventListener('click', async ()=>{
+      hideBanner(); status('retrying permission...')
+      try{ await getCurrentPosition(); status('permission granted') }catch(e){ status('still denied') }
+    })
+
+    renderList();
+
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('./sw.js').catch(()=>{})
+    }
+
+    (async ()=>{
+      if(!window.isSecureContext){
+        showBanner('This page is not in a secure context. Geolocation requires HTTPS or localhost.')
+        showInstructions('')
+      }
+      const state = await checkPermissionState()
+      if(state === 'denied'){
+        showBanner('Location access for this site is blocked. Open settings to allow location for this site.')
+        showInstructions(navigator.userAgent.includes('Android') ? 'android' : 'windows')
+      }
+    })()
+
+    window.Pinpal = { load, saveAll, getCurrentPosition, checkPermissionState }
+  </script>
+</body>
+</html>
