@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-adsense-account" content="ca-pub-6320415948412008">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1070ff">
+  <title>Contact Us — Pinpal</title>
+  <meta name="description" content="Get in touch with the Pinpal team">
+  <style>
+    :root {
+      --bg: #f5f8ff;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --primary: #1070ff;
+      --primary-strong: #0a57d9;
+      --border: #dfe7f3;
+      --text: #111827;
+      --muted: #58667a;
+      --radius: 12px;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #eef5ff 0%, #ffffff 140px);
+      color: var(--text);
+      padding: 18px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--surface);
+      padding: 28px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.75rem;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      margin-top: 24px;
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    p {
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: var(--primary-strong);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .contact-method {
+      background: var(--surface-soft);
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .contact-method h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .contact-method p {
+      margin: 8px 0;
+    }
+
+    .contact-icon {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input:focus, textarea:focus {
+      outline: 2px solid rgba(16, 112, 255, 0.15);
+      border-color: var(--primary);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background 0.2s ease, transform 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--primary-strong);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .back-link {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .social-links a:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Contact Us</h1>
+    <p class="muted">Have questions, feedback, or found a bug? We'd love to hear from you!</p>
+
+    <h2>Get in Touch</h2>
+
+    <div class="contact-method">
+      <h3>📧 Email</h3>
+      <p>The quickest way to reach us:</p>
+      <p><strong><a href="mailto:satarazaza03@gmail.com">satarazaza03@gmail.com</a></strong></p>
+    </div>
+
+    <div class="contact-method">
+      <h3>💻 GitHub</h3>
+      <p>Found a bug or have a feature request? Open an issue on our GitHub repository:</p>
+      <p><a href="https://github.com/ZazaSatara10/zazasatara10.github.io" target="_blank">github.com/ZazaSatara10/zazasatara10.github.io</a></p>
+    </div>
+
+    <div class="contact-method">
+      <h3>📍 Location</h3>
+      <p>Based in Dar es Salaam, Tanzania</p>
+    </div>
+
+    <h2>Quick Contact Form</h2>
+    <p class="muted">Fill out the form below and we'll get back to you as soon as possible.</p>
+
+    <form action="https://formspree.io/f/xqaekpky" method="POST">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" placeholder="John Doe" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Your Email</label>
+        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="How can we help?" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn">Send Message</button>
+    </form>
+
+    <h2>Connect With Us</h2>
+    <p>Follow us on social media:</p>
+    <div class="social-links">
+      <a href="https://github.com/ZazaSatara10" title="GitHub" target="_blank">🐙</a>
+      <a href="mailto:satarazaza03@gmail.com" title="Email">✉️</a>
+    </div>
+
+    <div class="back-link">
+      <p><a href="index.htm">← Back to Pinpal</a></p>
+      <p class="muted">© 2026 Pinpal</p>
+    </div>
+  </main>
+</body>
+</html>
