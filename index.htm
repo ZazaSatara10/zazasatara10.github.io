@@ -37,7 +37,7 @@
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #eef5ff 0%, #ffffff 140px);
+      background: linear-gradient(180deg, #e8d5ff 0%, #d4c5f9 140px);
       color: var(--text);
       padding: var(--pad);
       -webkit-font-smoothing: antialiased;
@@ -347,7 +347,7 @@
     @media (max-width: 720px) {
       body {
         padding: 12px;
-        background: linear-gradient(180deg, #edf5ff 0%, #ffffff 120px);
+        background: linear-gradient(180deg, #e8d5ff 0%, #d4c5f9 120px);
       }
 
       .topbar {
@@ -635,7 +635,7 @@
       items.forEach((it,idx)=>{
         const el = document.createElement('div'); el.className='loc'
         const left = document.createElement('div'); left.className='loc-main'
-        left.innerHTML = `<span class="loc-name">${escapeHtml(it.name||'Saved location')}</span><div class="loc-meta">${it.lat.toFixed(6)}, ${it.lng.toFixed(6)} • ${new Date(it.ts).toLocaleString()}</div>`
+        left.innerHTML = `<span class="loc-name">${escapeHtml(it.name||'Saved location')}</span><div class="loc-meta">${it.lat.toFixed(6)}, ${it.lng.toFixed(6)} • ${new Date(it.ts).toLocaleString()}[...]
         const right = document.createElement('div'); right.className='loc-actions'
         const showBtn = document.createElement('button'); showBtn.className='btn btn-secondary'; showBtn.textContent='Show on Map'
         showBtn.onclick = ()=>{
@@ -717,7 +717,7 @@
       const stepsEl = document.getElementById('permSteps')
       let html = ''
       if(!window.isSecureContext){
-        html += '<p><strong>Note:</strong> This page is not served over HTTPS. Geolocation requires a secure context (HTTPS) or localhost. Serve the page over HTTPS or open it from <em>http://localhost</em>.</p>'
+        html += '<p><strong>Note:</strong> This page is not served over HTTPS. Geolocation requires a secure context (HTTPS) or localhost. Serve the page over HTTPS or open it from <em>http://localhos[...]
       }
       if(platform === 'android'){
         html += '<ol>'+
