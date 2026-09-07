@@ -141,7 +141,7 @@
 
     .btn-danger {
       background: #fff;
-      border-color: rgba(217, 48, 37, 0.25);
+      border: 1px solid rgba(217, 48, 37, 0.25);
       color: var(--danger);
     }
 
@@ -635,7 +635,7 @@
       items.forEach((it,idx)=>{
         const el = document.createElement('div'); el.className='loc'
         const left = document.createElement('div'); left.className='loc-main'
-        left.innerHTML = `<span class="loc-name">${escapeHtml(it.name||'Saved location')}</span><div class="loc-meta">${it.lat.toFixed(6)}, ${it.lng.toFixed(6)} • ${new Date(it.ts).toLocaleString()}[...]
+        left.innerHTML = `<span class="loc-name">${escapeHtml(it.name||'Saved location')}</span><div class="loc-meta">${it.lat.toFixed(6)}, ${it.lng.toFixed(6)} • ${new Date(it.ts).toLocaleString()}</div>`
         const right = document.createElement('div'); right.className='loc-actions'
         const showBtn = document.createElement('button'); showBtn.className='btn btn-secondary'; showBtn.textContent='Show on Map'
         showBtn.onclick = ()=>{
@@ -648,17 +648,19 @@
           try{
             const mode = document.getElementById('mode').value
             const dest = `${it.lat},${it.lng}`
+            // Try Android Maps intent first
             const intentUrl = `intent://navigate?q=${dest}#Intent;package=com.google.android.apps.maps;scheme=google.navigation;end`
             try{ window.location.href = intentUrl }catch(e){}
 
+            // After trying intent, open web directions (with origin if available)
             setTimeout(async ()=>{
               try{
                 const pos = await getCurrentPosition()
-                const mapsWeb = `https://www.google.com/maps/dir/?api=1&origin=${pos.coords.latitude},${pos.coords.longitude}&destination=${dest}&travelmode=${mode}`
+                const mapsWeb = `https://www.google.com/maps/dir/?api=1&origin=${pos.coords.latitude},${pos.coords.longitude}&destination=${encodeURIComponent(dest)}&travelmode=${encodeURIComponent(mode)}`
                 window.open(mapsWeb, '_blank')
                 status('opened Google Maps')
               }catch(e){
-                const mapsWeb = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=${mode}`
+                const mapsWeb = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=${encodeURIComponent(mode)}`
                 window.open(mapsWeb, '_blank')
                 status('opened Google Maps')
               }
@@ -670,7 +672,7 @@
           try{
             const mode = document.getElementById('mode').value || 'driving'
             const dest = `${it.lat},${it.lng}`
-            const mapsWeb = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=${mode}`
+            const mapsWeb = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=${encodeURIComponent(mode)}`
             const label = it.name ? `${it.name} — ` : ''
             const text = `${label}Navigate here: ${mapsWeb}`
             const payload = encodeURIComponent(text)
@@ -717,7 +719,7 @@
       const stepsEl = document.getElementById('permSteps')
       let html = ''
       if(!window.isSecureContext){
-        html += '<p><strong>Note:</strong> This page is not served over HTTPS. Geolocation requires a secure context (HTTPS) or localhost. Serve the page over HTTPS or open it from <em>http://localhos[...]
+        html += '<p><strong>Note:</strong> This page is not served over HTTPS. Geolocation requires a secure context (HTTPS) or localhost. Serve the page over HTTPS or open it from <em>http://localhost</em> or using a secure origin.</p>'
       }
       if(platform === 'android'){
         html += '<ol>'+
